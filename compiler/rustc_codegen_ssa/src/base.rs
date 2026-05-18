@@ -742,15 +742,16 @@ pub fn codegen_crate<B: ExtraBackendMethods>(backend: B, tcx: TyCtxt<'_>) -> Ong
     // However, this strategy would lead to high memory usage, as it meant the
     // LLVM-IR for all of the largest CGUs would be resident in memory at once.
     //
-    // Instead, we can compromise by ordering CGUs such that the largest and
-    // smallest are first, second largest and smallest are next, etc. If there
-    // are large size variations, this can reduce memory usage significantly.
+    // Instead, we can compromise by ordering CGUs such that each large CGU is
+    // paired with a middle-sized one. This avoids putting all large CGUs in the
+    // initial batch, while also avoiding the poor utilization that can happen
+    // if the initial batch contains the very smallest CGUs.
     let codegen_units: Vec<_> = {
         let mut sorted_cgus = codegen_units.iter().collect::<Vec<_>>();
         sorted_cgus.sort_by_key(|cgu| cmp::Reverse(cgu.size_estimate()));
 
         let (first_half, second_half) = sorted_cgus.split_at(sorted_cgus.len() / 2);
-        first_half.iter().interleave(second_half.iter().rev()).copied().collect()
+        first_half.iter().interleave(second_half.iter()).copied().collect()
     };
 
     // Calculate the CGU reuse

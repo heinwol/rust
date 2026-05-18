@@ -109,7 +109,7 @@ use rustc_hir::definitions::DefPathDataName;
 use rustc_middle::bug;
 use rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrFlags;
 use rustc_middle::middle::exported_symbols::{SymbolExportInfo, SymbolExportLevel};
-use rustc_middle::mir::StatementKind;
+use rustc_middle::mir::{Body, Rvalue, StatementKind, TerminatorKind};
 use rustc_middle::mono::{
     CodegenUnit, CodegenUnitNameBuilder, InstantiationMode, MonoItem, MonoItemData,
     MonoItemPartitions, Visibility,
@@ -1329,26 +1329,13 @@ pub(crate) fn provide(providers: &mut Providers) {
     providers.queries.size_estimate = |tcx, instance| {
         match instance.def {
             // "Normal" functions size estimate: the number of
-            // statements, plus one for the terminator.
+            // statements and terminators, weighted by their expected
+            // codegen cost.
             InstanceKind::Item(..)
             | InstanceKind::DropGlue(..)
             | InstanceKind::AsyncDropGlueCtorShim(..) => {
                 let mir = tcx.instance_mir(instance.def);
-                mir.basic_blocks
-                    .iter()
-                    .map(|bb| {
-                        bb.statements
-                            .iter()
-                            .filter_map(|stmt| match stmt.kind {
-                                StatementKind::StorageLive(_) | StatementKind::StorageDead(_) => {
-                                    None
-                                }
-                                _ => Some(stmt),
-                            })
-                            .count()
-                            + 1
-                    })
-                    .sum()
+                size_estimate_mir(mir)
             }
             // Other compiler-generated shims size estimate: 1
             _ => 1,
@@ -1356,4 +1343,75 @@ pub(crate) fn provide(providers: &mut Providers) {
     };
 
     collector::provide(providers);
+}
+
+fn size_estimate_mir<'tcx>(mir: &Body<'tcx>) -> usize {
+    mir.basic_blocks
+        .iter()
+        .map(|bb| {
+            let statements = bb.statements.iter().map(|stmt| match &stmt.kind {
+                // Storage markers usually do not become LLVM IR.
+                StatementKind::StorageLive(_) | StatementKind::StorageDead(_) => 0,
+                StatementKind::Assign(assign) => rvalue_size_estimate(&assign.1),
+                StatementKind::Intrinsic(_) => 4,
+                StatementKind::SetDiscriminant { .. } => 2,
+                StatementKind::PlaceMention(_)
+                | StatementKind::AscribeUserType(_, _)
+                | StatementKind::Coverage(_)
+                | StatementKind::ConstEvalCounter
+                | StatementKind::Nop
+                | StatementKind::BackwardIncompatibleDropHint { .. }
+                | StatementKind::FakeRead(_) => 1,
+            });
+
+            statements.sum::<usize>() + terminator_size_estimate(&bb.terminator().kind)
+        })
+        .sum()
+}
+
+fn rvalue_size_estimate(rvalue: &Rvalue<'_>) -> usize {
+    match rvalue {
+        Rvalue::Use(..)
+        | Rvalue::Ref(..)
+        | Rvalue::RawPtr(..)
+        | Rvalue::CopyForDeref(_)
+        | Rvalue::WrapUnsafeBinder(..)
+        | Rvalue::Reborrow(..) => 1,
+        Rvalue::UnaryOp(..) | Rvalue::Discriminant(_) => 2,
+        Rvalue::Cast(..) | Rvalue::BinaryOp(..) => 3,
+        Rvalue::Repeat(..) | Rvalue::ThreadLocalRef(_) => 4,
+        Rvalue::Aggregate(_, fields) => 1 + fields.len(),
+    }
+}
+
+fn terminator_size_estimate(terminator: &TerminatorKind<'_>) -> usize {
+    match terminator {
+        TerminatorKind::Goto { .. }
+        | TerminatorKind::Return
+        | TerminatorKind::Unreachable
+        | TerminatorKind::UnwindResume
+        | TerminatorKind::UnwindTerminate(_)
+        | TerminatorKind::CoroutineDrop
+        | TerminatorKind::FalseEdge { .. }
+        | TerminatorKind::FalseUnwind { .. } => 1,
+        TerminatorKind::SwitchInt { targets, .. } => 1 + targets.all_targets().len(),
+        TerminatorKind::Drop { unwind, drop, async_fut, .. } => {
+            4 + unwind_size_estimate(*unwind)
+                + usize::from(drop.is_some())
+                + usize::from(async_fut.is_some())
+        }
+        TerminatorKind::Call { args, target, unwind, .. } => {
+            5 + args.len() + usize::from(target.is_some()) + unwind_size_estimate(*unwind)
+        }
+        TerminatorKind::TailCall { args, .. } => 5 + args.len(),
+        TerminatorKind::Assert { unwind, .. } => 6 + unwind_size_estimate(*unwind),
+        TerminatorKind::Yield { drop, .. } => 4 + usize::from(drop.is_some()),
+        TerminatorKind::InlineAsm { operands, targets, unwind, .. } => {
+            6 + operands.len() + targets.len() + unwind_size_estimate(*unwind)
+        }
+    }
+}
+
+fn unwind_size_estimate(unwind: rustc_middle::mir::UnwindAction) -> usize {
+    usize::from(matches!(unwind, rustc_middle::mir::UnwindAction::Cleanup(_)))
 }
