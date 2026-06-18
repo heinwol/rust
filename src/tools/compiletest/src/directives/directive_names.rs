@@ -34,6 +34,7 @@ pub(crate) const KNOWN_DIRECTIVE_NAMES: &[&str] = &[
     "dont-check-failure-status",
     "dont-require-annotations",
     "edition",
+    "erase-alloc-ids",
     "error-pattern",
     "exact-llvm-major-version",
     "exec-env",

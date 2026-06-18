@@ -364,6 +364,9 @@ fn make_directive_handlers_map() -> HashMap<&'static str, Handler> {
                 &mut props.compare_output_by_lines,
             );
         }),
+        handler(ERASE_ALLOC_IDS, |config, ln, props| {
+            config.set_name_directive(ln, ERASE_ALLOC_IDS, &mut props.erase_alloc_ids);
+        }),
     ];
 
     handlers

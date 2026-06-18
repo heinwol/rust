@@ -2574,12 +2574,28 @@ impl<'test> TestCx<'test> {
         }
 
         // AllocId are numbered globally in a compilation session. This can lead to changes
-        // depending on the exact compilation flags and host architecture. Meanwhile, we want
-        // to keep them numbered, to see if the same id appears multiple times.
-        // So we remap to deterministic numbers that only depend on the subset of allocations
-        // that actually appear in the output.
+        // depending on the exact compilation flags and host architecture.
+        // Meanwhile, we want to keep them consistent. We can either erase all Id information
+        // altogether or remap the Ids to deterministic numbers that only depend on the subset of
+        // allocations that actually appear in the output to see if the same id appears
+        // multiple times. The first case is controlled by `erase_alloc_ids` and could
+        // theoretically lead to some false-negatives.
+        //
         // We use uppercase ALLOC to distinguish from the non-normalized version.
-        {
+        if self.props.erase_alloc_ids {
+            normalized = static_regex!(
+                r"╾─*(a(lloc)?|A(LLOC)?)\d+(\+0x[0-9a-f]+)?(<imm>)?( ?\(\d+ ptr bytes\))?─*╼"
+            )
+            .replace_all(&normalized, |_: &Captures<'_>| "╾ALLOC$ID╼".to_string())
+            .into_owned();
+
+            normalized = static_regex!(r"\b(alloc|ALLOC)\d+\b")
+                .replace_all(&normalized, |_: &Captures<'_>| "ALLOC$ID".to_string())
+                .into_owned();
+        }
+        // use consistent `AllocId`s in other test modes, where parallel frontend
+        // should not (theoretically) be an issue.
+        else {
             let mut seen_allocs = indexmap::IndexSet::new();
 
             // The alloc-id appears in pretty-printed allocations.

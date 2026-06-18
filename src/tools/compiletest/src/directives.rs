@@ -214,6 +214,11 @@ pub(crate) struct TestProps {
     pub(crate) disable_gdb_pretty_printers: bool,
     /// Compare the output by lines, rather than as a single string.
     pub(crate) compare_output_by_lines: bool,
+    /// Whether to replace every `AllocId` with Id information with a generic placeholder
+    /// (`ALLOC$ID`). Useful for parallel frontend tests as it aims to bypass
+    /// compiler nondeterminism. Enable only if the test causes trouble when comaring outputs
+    /// in UI tests.
+    pub(crate) erase_alloc_ids: bool,
 }
 
 mod directives {
@@ -261,6 +266,7 @@ mod directives {
     pub(crate) const MINICORE_COMPILE_FLAGS: &str = "minicore-compile-flags";
     pub(crate) const DISABLE_GDB_PRETTY_PRINTERS: &str = "disable-gdb-pretty-printers";
     pub(crate) const COMPARE_OUTPUT_BY_LINES: &str = "compare-output-by-lines";
+    pub(crate) const ERASE_ALLOC_IDS: &str = "erase-alloc-ids";
 }
 
 impl TestProps {
@@ -318,6 +324,7 @@ impl TestProps {
             dont_require_annotations: Default::default(),
             disable_gdb_pretty_printers: false,
             compare_output_by_lines: false,
+            erase_alloc_ids: false,
         }
     }
 
