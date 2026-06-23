@@ -1,5 +1,5 @@
 //@ stderr-per-bitwidth
-//@ ignore-parallel-frontend different alloc ids
+//@ erase-alloc-ids
 #[derive(Copy, Clone)]
 union Foo {
     a: isize,

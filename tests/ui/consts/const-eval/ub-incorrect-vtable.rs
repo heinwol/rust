@@ -12,7 +12,7 @@
 
 //@ stderr-per-bitwidth
 //@ dont-require-annotations: NOTE
-//@ ignore-parallel-frontend different alloc ids
+//@ erase-alloc-ids
 trait Trait {}
 
 const INVALID_VTABLE_ALIGNMENT: &dyn Trait =

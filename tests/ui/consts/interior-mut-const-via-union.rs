@@ -3,7 +3,7 @@
 //
 //@ build-fail
 //@ stderr-per-bitwidth
-//@ ignore-parallel-frontend different alloc ids
+//@ erase-alloc-ids
 use std::cell::Cell;
 use std::mem::ManuallyDrop;
 
