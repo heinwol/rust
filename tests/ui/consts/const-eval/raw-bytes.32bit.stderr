@@ -116,7 +116,7 @@ LL | const NULL_FAT_PTR: NonNull<dyn Send> = unsafe {
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               00 00 00 00 ╾ALLOC_ID╼                         │ ....╾──╼
+               00 00 00 00 ╾ALLOC$ID╼                         │ ....╾──╼
            }
 
 error[E0080]: constructing invalid value of type &u16: encountered an unaligned reference (required 2 byte alignment but found 1)
@@ -127,7 +127,7 @@ LL | const UNALIGNED: &u16 = unsafe { mem::transmute(&[0u8; 4]) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 4, align: 4) {
-               ╾ALLOC_ID╼                                     │ ╾──╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 error[E0080]: constructing invalid value of type Box<u16>: encountered an unaligned box (required 2 byte alignment but found 1)
@@ -138,7 +138,7 @@ LL | const UNALIGNED_BOX: Box<u16> = unsafe { mem::transmute(&[0u8; 4]) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 4, align: 4) {
-               ╾ALLOC_ID╼                                     │ ╾──╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 error[E0080]: constructing invalid value of type &u16: encountered a null reference
@@ -207,7 +207,7 @@ LL | const DANGLING_FN_PTR: fn() = unsafe { mem::transmute(13usize) };
                0d 00 00 00                                     │ ....
            }
 
-error[E0080]: constructing invalid value of type fn(): encountered ALLOC3<imm>, but expected a function pointer
+error[E0080]: constructing invalid value of type fn(): encountered ALLOC$ID<imm>, but expected a function pointer
   --> $DIR/raw-bytes.rs:104:1
    |
 LL | const DATA_FN_PTR: fn() = unsafe { mem::transmute(&13) };
@@ -215,7 +215,7 @@ LL | const DATA_FN_PTR: fn() = unsafe { mem::transmute(&13) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 4, align: 4) {
-               ╾ALLOC_ID╼                                     │ ╾──╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 error[E0080]: constructing invalid value of type &Bar: encountered a reference pointing to uninhabited type Bar
@@ -237,7 +237,7 @@ LL | const STR_TOO_LONG: &str = unsafe { mem::transmute((&42u8, 999usize)) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ e7 03 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ e7 03 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type (&str,): at .0, encountered invalid reference metadata: slice is bigger than largest supported object
@@ -248,7 +248,7 @@ LL | const NESTED_STR_MUCH_TOO_LONG: (&str,) = (unsafe { mem::transmute((&42, us
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ff ff ff ff                         │ ╾──╼....
+               ╾ALLOC$ID╼ ff ff ff ff                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &MyStr: encountered invalid reference metadata: slice is bigger than largest supported object
@@ -259,7 +259,7 @@ LL | const MY_STR_MUCH_TOO_LONG: &MyStr = unsafe { mem::transmute((&42u8, usize:
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ff ff ff ff                         │ ╾──╼....
+               ╾ALLOC$ID╼ ff ff ff ff                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &str: at .<deref>, encountered uninitialized memory, but expected a string
@@ -270,7 +270,7 @@ LL | const STR_NO_INIT: &str = unsafe { mem::transmute::<&[_], _>(&[MaybeUninit:
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 01 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 01 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &MyStr: at .<deref>.0, encountered uninitialized memory, but expected a string
@@ -281,7 +281,7 @@ LL | const MYSTR_NO_INIT: &MyStr = unsafe { mem::transmute::<&[_], _>(&[MaybeUni
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 01 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 01 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &MyStr: at .<deref>.0, encountered a pointer, but expected a string
@@ -294,7 +294,7 @@ LL | const MYSTR_NO_INIT_ISSUE83182: &MyStr = unsafe { mem::transmute::<&[_], _>
    = help: the absolute address of a pointer is not known at compile-time, so such operations are not supported
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 01 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 01 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[u8]: encountered a dangling reference (going beyond the bounds of its allocation)
@@ -305,7 +305,7 @@ LL | const SLICE_TOO_LONG: &[u8] = unsafe { mem::transmute((&42u8, 999usize)) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ e7 03 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ e7 03 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[u32]: encountered invalid reference metadata: slice is bigger than largest supported object
@@ -316,7 +316,7 @@ LL | const SLICE_TOO_LONG_OVERFLOW: &[u32] = unsafe { mem::transmute((&42u32, is
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ff ff ff 7f                         │ ╾──╼....
+               ╾ALLOC$ID╼ ff ff ff 7f                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type Box<[u8]>: encountered a dangling box (going beyond the bounds of its allocation)
@@ -327,7 +327,7 @@ LL | const SLICE_TOO_LONG_BOX: Box<[u8]> = unsafe { mem::transmute((&42u8, 999us
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ e7 03 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ e7 03 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[bool; 1]: at .<deref>[0], encountered 0x03, but expected a boolean
@@ -338,7 +338,7 @@ LL | const SLICE_CONTENT_INVALID: &[bool] = &[unsafe { mem::transmute(3u8) }];
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 4, align: 4) {
-               ╾ALLOC_ID╼                                     │ ╾──╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 note: erroneous constant encountered
@@ -355,7 +355,7 @@ LL | const MYSLICE_PREFIX_BAD: &MySliceBool = &MySlice(unsafe { mem::transmute(3
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 4, align: 4) {
-               ╾ALLOC_ID╼                                     │ ╾──╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 note: erroneous constant encountered
@@ -372,7 +372,7 @@ LL | const MYSLICE_SUFFIX_BAD: &MySliceBool = &MySlice(true, [unsafe { mem::tran
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 4, align: 4) {
-               ╾ALLOC_ID╼                                     │ ╾──╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 note: erroneous constant encountered
@@ -381,7 +381,7 @@ note: erroneous constant encountered
 LL | const MYSLICE_SUFFIX_BAD: &MySliceBool = &MySlice(true, [unsafe { mem::transmute(3u8) }]);
    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC17<imm>, but expected a vtable pointer
+error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC$ID<imm>, but expected a vtable pointer
   --> $DIR/raw-bytes.rs:168:1
    |
 LL | const TRAIT_OBJ_SHORT_VTABLE_1: W<&dyn Trait> = unsafe { mem::transmute(W((&92u8, &3u8))) };
@@ -389,10 +389,10 @@ LL | const TRAIT_OBJ_SHORT_VTABLE_1: W<&dyn Trait> = unsafe { mem::transmute(W((
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ╾ALLOC_ID╼                         │ ╾──╼╾──╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
-error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC19<imm>, but expected a vtable pointer
+error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC$ID<imm>, but expected a vtable pointer
   --> $DIR/raw-bytes.rs:171:1
    |
 LL | const TRAIT_OBJ_SHORT_VTABLE_2: W<&dyn Trait> = unsafe { mem::transmute(W((&92u8, &3u64))) };
@@ -400,7 +400,7 @@ LL | const TRAIT_OBJ_SHORT_VTABLE_2: W<&dyn Trait> = unsafe { mem::transmute(W((
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ╾ALLOC_ID╼                         │ ╾──╼╾──╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered 0x4[noalloc], but expected a vtable pointer
@@ -411,10 +411,10 @@ LL | const TRAIT_OBJ_INT_VTABLE: W<&dyn Trait> = unsafe { mem::transmute(W((&92u
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 04 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 04 00 00 00                         │ ╾──╼....
            }
 
-error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC22<imm>, but expected a vtable pointer
+error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC$ID<imm>, but expected a vtable pointer
   --> $DIR/raw-bytes.rs:176:1
    |
 LL | const TRAIT_OBJ_BAD_DROP_FN_NOT_FN_PTR: W<&dyn Trait> = unsafe { mem::transmute(W((&92u8, &[&42u8; 8]))) };
@@ -422,7 +422,7 @@ LL | const TRAIT_OBJ_BAD_DROP_FN_NOT_FN_PTR: W<&dyn Trait> = unsafe { mem::trans
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ╾ALLOC_ID╼                         │ ╾──╼╾──╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type &dyn Trait: at .<deref>.<dyn-downcast(bool)>, encountered 0x03, but expected a boolean
@@ -433,7 +433,7 @@ LL | const TRAIT_OBJ_CONTENT_INVALID: &dyn Trait = unsafe { mem::transmute::<_, 
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ╾ALLOC_ID╼                         │ ╾──╼╾──╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type *const dyn Trait: encountered null pointer, but expected a vtable pointer
@@ -444,10 +444,10 @@ LL | const RAW_TRAIT_OBJ_VTABLE_NULL: *const dyn Trait = unsafe { mem::transmute
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 00 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 00 00 00 00                         │ ╾──╼....
            }
 
-error[E0080]: constructing invalid value of type *const dyn Trait: encountered ALLOC27<imm>, but expected a vtable pointer
+error[E0080]: constructing invalid value of type *const dyn Trait: encountered ALLOC$ID<imm>, but expected a vtable pointer
   --> $DIR/raw-bytes.rs:184:1
    |
 LL | const RAW_TRAIT_OBJ_VTABLE_INVALID: *const dyn Trait = unsafe { mem::transmute((&92u8, &3u64)) };
@@ -455,7 +455,7 @@ LL | const RAW_TRAIT_OBJ_VTABLE_INVALID: *const dyn Trait = unsafe { mem::transm
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ ╾ALLOC_ID╼                         │ ╾──╼╾──╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type &[!; 1]: encountered a reference pointing to uninhabited type [!; 1]
@@ -499,7 +499,7 @@ LL | pub static S4: &[u8] = unsafe { from_raw_parts((&D1) as *const _ as _, 1) }
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 01 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 01 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[u8]: at .<deref>[0], encountered a pointer, but expected an integer
@@ -512,7 +512,7 @@ LL | pub static S5: &[u8] = unsafe { from_raw_parts((&D3) as *const _ as _, mem:
    = help: the absolute address of a pointer is not known at compile-time, so such operations are not supported
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 04 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 04 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[bool]: at .<deref>[0], encountered 0x11, but expected a boolean
@@ -523,7 +523,7 @@ LL | pub static S6: &[bool] = unsafe { from_raw_parts((&D0) as *const _ as _, 4)
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 04 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 04 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[u16]: at .<deref>[1], encountered uninitialized memory, but expected an integer
@@ -534,7 +534,7 @@ LL | pub static S7: &[u16] = unsafe {
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID+0x2╼ 04 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 04 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[u8]: at .<deref>[0], encountered uninitialized memory, but expected an integer
@@ -545,7 +545,7 @@ LL | pub static R4: &[u8] = unsafe {
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 01 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 01 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[u8]: at .<deref>[0], encountered a pointer, but expected an integer
@@ -558,7 +558,7 @@ LL | pub static R5: &[u8] = unsafe {
    = help: the absolute address of a pointer is not known at compile-time, so such operations are not supported
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 04 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 04 00 00 00                         │ ╾──╼....
            }
 
 error[E0080]: constructing invalid value of type &[bool]: at .<deref>[0], encountered 0x11, but expected a boolean
@@ -569,7 +569,7 @@ LL | pub static R6: &[bool] = unsafe {
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: 8, align: 4) {
-               ╾ALLOC_ID╼ 04 00 00 00                         │ ╾──╼....
+               ╾ALLOC$ID╼ 04 00 00 00                         │ ╾──╼....
            }
 
 error: aborting due to 50 previous errors

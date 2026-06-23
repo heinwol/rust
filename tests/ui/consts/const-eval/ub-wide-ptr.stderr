@@ -140,7 +140,7 @@ LL | const SLICE_CONTENT_INVALID: &[bool] = &[unsafe { mem::transmute(3u8) }];
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                         │ ╾──────╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 note: erroneous constant encountered
@@ -157,7 +157,7 @@ LL | const MYSLICE_PREFIX_BAD: &MySliceBool = &MySlice(unsafe { mem::transmute(3
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                         │ ╾──────╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 note: erroneous constant encountered
@@ -174,7 +174,7 @@ LL | const MYSLICE_SUFFIX_BAD: &MySliceBool = &MySlice(true, [unsafe { mem::tran
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                         │ ╾──────╼
+               ╾ALLOC$ID╼                                     │ ╾──╼
            }
 
 note: erroneous constant encountered
@@ -201,7 +201,7 @@ LL | const TRAIT_OBJ_SHORT_VTABLE_1: W<&dyn Trait> = unsafe { mem::transmute(W((
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC$ID<imm>, but expected a vtable pointer
@@ -212,7 +212,7 @@ LL | const TRAIT_OBJ_SHORT_VTABLE_2: W<&dyn Trait> = unsafe { mem::transmute(W((
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered 0x4[noalloc], but expected a vtable pointer
@@ -234,7 +234,7 @@ LL | const TRAIT_OBJ_UNALIGNED_VTABLE: &dyn Trait = unsafe { mem::transmute((&92
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type &dyn Trait: encountered ALLOC$ID<imm>, but expected a vtable pointer
@@ -245,7 +245,7 @@ LL | const TRAIT_OBJ_BAD_DROP_FN_NULL: &dyn Trait = unsafe { mem::transmute((&92
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type &dyn Trait: encountered ALLOC$ID<imm>, but expected a vtable pointer
@@ -256,7 +256,7 @@ LL | const TRAIT_OBJ_BAD_DROP_FN_INT: &dyn Trait = unsafe { mem::transmute((&92u
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type W<&dyn Trait>: at .0, encountered ALLOC$ID<imm>, but expected a vtable pointer
@@ -267,7 +267,7 @@ LL | const TRAIT_OBJ_BAD_DROP_FN_NOT_FN_PTR: W<&dyn Trait> = unsafe { mem::trans
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type &dyn Trait: at .<deref>.<dyn-downcast(bool)>, encountered 0x03, but expected a boolean
@@ -278,7 +278,7 @@ LL | const TRAIT_OBJ_CONTENT_INVALID: &dyn Trait = unsafe { mem::transmute::<_, 
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type *const dyn Trait: encountered null pointer, but expected a vtable pointer
@@ -300,7 +300,7 @@ LL | const RAW_TRAIT_OBJ_VTABLE_INVALID: *const dyn Trait = unsafe { mem::transm
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error[E0080]: constructing invalid value of type *const dyn Trait: encountered null pointer, but expected a vtable pointer
@@ -322,7 +322,7 @@ LL | static mut RAW_TRAIT_OBJ_VTABLE_INVALID_THROUGH_REF: *const dyn Trait = uns
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼ ╾ALLOC$ID╼ │ ╾──────╼╾──────╼
+               ╾ALLOC$ID╼ ╾ALLOC$ID╼                         │ ╾──╼╾──╼
            }
 
 error: aborting due to 29 previous errors
