@@ -9,6 +9,7 @@ use std::{ptr, mem};
 //@ normalize-stderr: "offset \d+" -> "offset N"
 //@ normalize-stderr: "size \d+" -> "size N"
 //@ normalize-stderr: "0x[0-9](\.\.|\])" -> "0x%$1"
+//@ normalize-stderr: "(ALLOC|alloc)\d+" -> "ALLOC$$ID"
 //@ dont-require-annotations: NOTE
 
 /// A newtype wrapper to prevent MIR generation from inserting reborrows that would affect the error

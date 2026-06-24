@@ -1,6 +1,7 @@
 // Strip out raw byte dumps to make comparison platform-independent:
 //@ normalize-stderr: "(the raw bytes of the constant) \(size: [0-9]*, align: [0-9]*\)" -> "$1 (size: $$SIZE, align: $$ALIGN)"
 //@ normalize-stderr: "([0-9a-f][0-9a-f] |╾─*ALLOC[0-9]+(\+[a-z0-9]+)?─*╼ )+ *│.*" -> "HEX_DUMP"
+//@ normalize-stderr: "(ALLOC|alloc)\d+" -> "ALLOC$$ID"
 //@ dont-require-annotations: NOTE
 #![allow(invalid_value)] // make sure we cannot allow away the errors tested here
 #![feature(rustc_attrs, ptr_metadata)]
