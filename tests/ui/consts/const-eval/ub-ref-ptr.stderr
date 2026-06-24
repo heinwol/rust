@@ -6,7 +6,7 @@ LL | const UNALIGNED: &u16 = unsafe { mem::transmute(&[0u8; 4]) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                                     │ ╾──╼
+               HEX_DUMP
            }
 
 error[E0080]: constructing invalid value of type Box<u16>: encountered an unaligned box (required 2 byte alignment but found 1)
@@ -17,7 +17,7 @@ LL | const UNALIGNED_BOX: Box<u16> = unsafe { mem::transmute(&[0u8; 4]) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                                     │ ╾──╼
+               HEX_DUMP
            }
 
 error[E0080]: constructing invalid value of type &u16: encountered a null reference
@@ -50,7 +50,7 @@ LL | const MAYBE_NULL_BOX: Box<()> = unsafe { mem::transmute({
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                                     │ ╾──╼
+               HEX_DUMP
            }
 
 error[E0080]: unable to turn pointer into integer
@@ -164,7 +164,7 @@ LL | const DATA_FN_PTR: fn() = unsafe { mem::transmute(&13) };
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                                     │ ╾──╼
+               HEX_DUMP
            }
 
 error[E0080]: constructing invalid value of type fn(): encountered ALLOC$ID+0xa, but expected a function pointer
@@ -175,7 +175,7 @@ LL | const MAYBE_NULL_FN_PTR: fn() = unsafe { mem::transmute({
    |
    = note: the rules on what exactly is undefined behavior aren't clear, so this check might be overzealous. Please open an issue on the rustc repository if you believe it should not be considered undefined behavior.
    = note: the raw bytes of the constant (size: $SIZE, align: $ALIGN) {
-               ╾ALLOC$ID╼                                     │ ╾──╼
+               HEX_DUMP
            }
 
 error[E0080]: accessing memory based on pointer with alignment 1, but alignment 4 is required
